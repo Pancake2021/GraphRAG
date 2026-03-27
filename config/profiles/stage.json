@@ -1,0 +1,13 @@
+{
+  "retention_days": {
+    "raw": 14,
+    "processed": 45,
+    "logs": 30,
+    "eval": 120
+  },
+  "alerts": {
+    "max_stage_latency_sec": 20,
+    "min_relation_valid_rate": 0.75,
+    "max_error_rate": 0.15
+  }
+}

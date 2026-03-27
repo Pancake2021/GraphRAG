@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+
+# Virtual envs
+.venv/
+venv/
+
+# Local env
+.env
+
+# Runtime artifacts
+logs/
+.chroma/
+
+# Data artifacts (keep only seed datasets)
+data/raw/
+data/processed/
+data/ingest/
+data/governance/
+data/ops/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Packaging artifacts
+*.egg-info/

@@ -1,0 +1,29 @@
+[project]
+name = "graph-rag"
+version = "0.1.0"
+description = "GraphRAG MVP for team communication analysis"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.7.0",
+  "requests>=2.32.0",
+  "networkx>=3.3",
+  "rank-bm25>=0.2.2",
+  "chromadb>=1.0.0",
+  "sentence-transformers>=3.0.0",
+  "natasha>=1.6.0",
+  "langchain>=0.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
