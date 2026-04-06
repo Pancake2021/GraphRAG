@@ -1,4 +1,4 @@
-.PHONY: setup preflight full-run ingest-full ingest-incremental quality-check benchmark retention-check health-ready test clean
+.PHONY: setup preflight full-run ingest-full ingest-incremental quality-check benchmark ragas-eval retention-check health-ready test clean
 
 setup:
 	uv venv
@@ -21,6 +21,9 @@ quality-check:
 
 benchmark:
 	python -m src.pipeline benchmark --cases data/benchmark/cases.jsonl --top-k 5 --lang ru
+
+ragas-eval:
+	python -m src.pipeline evaluate-ragas --questions data/eval/questions.json --top-k 5 --lang ru
 
 retention-check:
 	python -m src.pipeline retention-check --profile dev

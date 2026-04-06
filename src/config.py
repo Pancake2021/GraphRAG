@@ -50,6 +50,7 @@ class Settings:
     quality_report_path: Path = Path("data/processed/quality_report.json")
     benchmark_report_path: Path = Path("data/processed/benchmark_report.json")
     interview_report_path: Path = Path("data/processed/interview_report.json")
+    ragas_report_path: Path = Path("data/processed/ragas_evaluation.json")
     profiles_dir: Path = Path("config/profiles")
 
     def ensure_dirs(self) -> None:

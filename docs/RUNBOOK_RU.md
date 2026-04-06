@@ -36,7 +36,12 @@ python -m src.pipeline quality-check --golden data/golden/golden_relations.jsonl
 python -m src.pipeline benchmark --cases data/benchmark/cases.jsonl --top-k 5 --lang ru
 ```
 
-## 7) Полный сквозной прогон одной командой
+## 7) RAGAS-оценка GraphRAG
+```bash
+python -m src.pipeline evaluate-ragas --questions data/eval/questions.json --top-k 5 --lang ru
+```
+
+## 8) Полный сквозной прогон одной командой
 ```bash
 python -m src.pipeline full-run \
   --n 30 \
@@ -47,20 +52,21 @@ python -m src.pipeline full-run \
   --lang ru
 ```
 
-## 8) Где смотреть результаты
+## 9) Где смотреть результаты
 - `data/raw/documents.jsonl`
 - `data/ingest/manifest.json`
 - `data/processed/chunks.jsonl`
 - `data/processed/graph.gpickle`
 - `data/processed/evaluation.json`
 - `data/processed/quality_report.json`
+- `data/processed/ragas_evaluation.json`
 - `data/processed/benchmark_report.json`
 - `data/processed/interview_report.json`
 - `data/ops/metrics.json`
 - `data/ops/metrics.prom`
 - `data/ops/alerts.json`
 
-## 9) Health и retention
+## 10) Health и retention
 ```bash
 python -m src.pipeline health --mode ready
 python -m src.pipeline retention-check --profile stage

@@ -13,6 +13,7 @@ import requests
 
 from src.config import settings
 from src.data_gen.synthetic import generate_synthetic_documents
+from src.eval.ragas_eval import evaluate_with_ragas
 from src.extraction.ner import extract_entities
 from src.extraction.normalization import normalize_entities
 from src.extraction.relation_quality import validate_relations
@@ -539,6 +540,48 @@ def cmd_evaluate(questions_path: Path, top_k: int, lang: str | None = None) -> d
     return summary
 
 
+def cmd_evaluate_ragas(questions_path: Path, top_k: int, lang: str | None = None) -> dict:
+    _llm().ensure_model_ready()
+    questions = _load_cases(questions_path)
+    if not questions:
+        raise RuntimeError(f"No questions found in {questions_path}")
+
+    m = _metrics()
+    m.inc("operation_count", 1)
+    rows: list[dict] = []
+
+    with m.timed("evaluate_ragas"):
+        for q in questions:
+            q_lang = _active_lang(lang, text_hint=q.question)
+            chunks, graph_ctx = _retrieve(q.question, top_k=top_k, use_graph=True)
+            result = _safe_answer(q.question, chunks, graph_ctx, lang=q_lang, metrics=m)
+            rows.append(
+                {
+                    "user_input": q.question,
+                    "response": result.answer,
+                    "retrieved_contexts": [c.text for c in result.retrieved_chunks],
+                    "reference": q.ground_truth,
+                }
+            )
+
+        ragas_payload = evaluate_with_ragas(
+            rows,
+            ollama_base_url=settings.ollama_base_url,
+            ollama_model=settings.ollama_model,
+            show_progress=True,
+        )
+
+    report = {
+        "num_questions": len(questions),
+        "summary": ragas_payload.summary,
+        "details": ragas_payload.rows,
+    }
+    write_json(settings.ragas_report_path, report)
+    m.flush()
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return report
+
+
 def cmd_quality_check(golden_path: Path, lang: str | None = None) -> dict:
     _llm().ensure_model_ready()
     rows = read_jsonl(golden_path)
@@ -769,6 +812,11 @@ def _build_parser() -> argparse.ArgumentParser:
     p_e.add_argument("--top-k", type=int, default=settings.top_k)
     p_e.add_argument("--lang", choices=["ru", "en"], default=None)
 
+    p_er = sub.add_parser("evaluate-ragas", help="Оценить GraphRAG метриками RAGAS")
+    p_er.add_argument("--questions", type=Path, default=settings.eval_data_dir / "questions.json")
+    p_er.add_argument("--top-k", type=int, default=settings.top_k)
+    p_er.add_argument("--lang", choices=["ru", "en"], default=None)
+
     p_qc = sub.add_parser("quality-check", help="Проверка extraction quality на golden-set")
     p_qc.add_argument("--golden", type=Path, default=settings.golden_dir / "golden_relations.jsonl")
     p_qc.add_argument("--lang", choices=["ru", "en"], default=None)
@@ -816,6 +864,8 @@ def main() -> None:
         cmd_query(args.query, args.top_k, lang=args.lang)
     elif args.cmd == "evaluate":
         cmd_evaluate(args.questions, args.top_k, lang=args.lang)
+    elif args.cmd == "evaluate-ragas":
+        cmd_evaluate_ragas(args.questions, args.top_k, lang=args.lang)
     elif args.cmd == "quality-check":
         cmd_quality_check(args.golden, lang=args.lang)
     elif args.cmd == "benchmark":

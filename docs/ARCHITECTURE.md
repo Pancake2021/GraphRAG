@@ -33,11 +33,15 @@
 - Считает precision/recall/F1 relation extraction на golden-set.
 - Пишет `data/processed/quality_report.json`.
 
-6. `benchmark`
+6. `evaluate-ragas`
+- Считает метрики RAGAS (`faithfulness`, `context_precision`, `context_recall`).
+- Пишет `data/processed/ragas_evaluation.json`.
+
+7. `benchmark`
 - Сравнивает baseline vs GraphRAG на benchmark-кейсах.
 - Пишет `data/processed/benchmark_report.json` и `data/processed/interview_report.json`.
 
-7. Ops
+8. Ops
 - Метрики/алерты (`src/ops/metrics_store.py`) -> `data/ops/*`.
 - Health checks (`src/ops/health.py`) для `live` и `ready`.
 - Retention (`src/governance/retention.py`) через `retention-check`.
@@ -60,6 +64,7 @@
 - `data/processed/graph.json`
 - `data/processed/evaluation.json`
 - `data/processed/quality_report.json`
+- `data/processed/ragas_evaluation.json`
 - `data/processed/benchmark_report.json`
 - `data/processed/interview_report.json`
 - `data/ops/metrics.json`

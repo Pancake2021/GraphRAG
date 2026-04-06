@@ -86,7 +86,19 @@ python -m src.pipeline quality-check --golden data/golden/golden_relations.jsonl
 - считает `precision/recall/F1` и `schema_violations`;
 - сохраняет в `data/processed/quality_report.json`.
 
-### 8) `benchmark`
+### 8) `evaluate-ragas`
+```bash
+python -m src.pipeline evaluate-ragas --questions data/eval/questions.json --top-k 5 --lang ru
+```
+Что делает:
+- прогоняет GraphRAG ответы по eval-набору;
+- считает метрики RAGAS:
+  - `faithfulness`
+  - `context_precision`
+  - `context_recall`
+- сохраняет отчёт в `data/processed/ragas_evaluation.json`.
+
+### 9) `benchmark`
 ```bash
 python -m src.pipeline benchmark --cases data/benchmark/cases.jsonl --top-k 5 --lang ru
 ```
@@ -97,7 +109,7 @@ python -m src.pipeline benchmark --cases data/benchmark/cases.jsonl --top-k 5 --
   - `data/processed/benchmark_report.json`
   - `data/processed/interview_report.json`.
 
-### 9) `retention-check`
+### 10) `retention-check`
 ```bash
 python -m src.pipeline retention-check --profile stage
 python -m src.pipeline retention-check --profile stage --apply
@@ -107,7 +119,7 @@ python -m src.pipeline retention-check --profile stage --apply
 - при `--apply` удаляет файлы;
 - отчёт: `data/governance/retention_report.json`.
 
-### 10) `health`
+### 11) `health`
 ```bash
 python -m src.pipeline health --mode live
 python -m src.pipeline health --mode ready
@@ -116,7 +128,7 @@ python -m src.pipeline health --mode ready
 - `live` — liveness процесса;
 - `ready` — готовность зависимостей (Ollama/model + обязательные артефакты).
 
-### 11) `preflight`
+### 12) `preflight`
 ```bash
 python -m src.pipeline preflight
 ```
@@ -125,7 +137,7 @@ python -m src.pipeline preflight
 - проверяет `ollama` в PATH;
 - проверяет Ollama API и модель.
 
-### 12) `full-run`
+### 13) `full-run`
 ```bash
 python -m src.pipeline full-run \
   --n 30 \
@@ -156,6 +168,7 @@ make preflight
 make ingest-full
 make ingest-incremental
 make quality-check
+make ragas-eval
 make benchmark
 make health-ready
 make full-run
